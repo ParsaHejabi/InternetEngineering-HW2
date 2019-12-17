@@ -4,7 +4,7 @@
   "description": "Second homework for Internet Engineering course at Shahid Beheshti University on Fall 2019",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "start": "node index.js"
   },
   "keywords": [
     "node.js",
@@ -14,7 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
