@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { Input, Select, Button } from "antd";
 import { Formik } from "formik";
+import GoogleMapReact from "google-map-react";
 
 const { Option } = Select;
 
@@ -50,7 +51,7 @@ FORM_DATA.fields.forEach(field => {
 
 const FormScreen = props => {
   const renderField = useCallback(
-    (field, { values, handleChange, handleBlur,setFieldValue }) => {
+    (field, { values, handleChange, handleBlur, setFieldValue }) => {
       switch (field.type) {
         case "Text":
           if (field.options) {
@@ -93,8 +94,17 @@ const FormScreen = props => {
     },
     []
   );
+  console.log(process.env);
   return (
-    <div>
+    <div style={{ height: "100vh", width: "100%" }}>
+      <GoogleMapReact
+        bootstrapURLKeys={{ key: process.env.REACT_APP_API_KEY }}
+        defaultCenter={{
+          lat: 59.95,
+          lng: 30.33
+        }}
+        defaultZoom={11}
+      />
       <Formik initialValues={initialValues} onSubmit={an => console.log(an)}>
         {props => (
           <form onSubmit={props.handleSubmit}>
