@@ -1,14 +1,16 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const logger = require('./logger');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 9000;
 
 const form_descriptors_path = path.join(__dirname, 'form-descriptors');
 
 console.log('Starting back-end application...');
+app.use(cors());
 app.use('/', (req, res, next) => {
     logger.logger.info({
         message: 'Request: ',
@@ -32,7 +34,7 @@ app.get('/api/forms', (req, res) => {
             return {
                 'id': form_descriptor.id,
                 'title': form_descriptor.title,
-                'url': req.path + '/' + form_descriptor.id
+                'url': req.url + form_descriptor.id
             }
         } catch (err) {
             logger.logger.error('Error reading file from disk: ', err);
