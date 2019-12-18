@@ -9,8 +9,12 @@
     "antd": "^3.26.3",
     "formik": "^2.0.8",
     "google-map-react": "^1.1.5",
+    "leaflet": "^1.6.0",
+    "mapir-react-component": "^1.6.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-leaflet": "^2.6.1",
+    "react-modal": "^3.11.1",
     "react-scripts": "3.3.0"
   },
   "scripts": {

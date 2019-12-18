@@ -1,7 +1,9 @@
-import React, { useCallback } from "react";
-import { Input, Select, Button } from "antd";
+import React, { useCallback, useState, useEffect } from "react";
+import { Input, Select, Button, Row, Col } from "antd";
 import { Formik } from "formik";
-import GoogleMapReact from "google-map-react";
+import MapModal from "../../components/map-modal";
+
+const InputGroup = Input.Group;
 
 const { Option } = Select;
 
@@ -44,12 +46,66 @@ const FORM_DATA = {
 };
 
 const initialValues = {};
+const initialShowModal = {};
+const initalAdresses = {};
 
 FORM_DATA.fields.forEach(field => {
-  initialValues[field.name] = "";
+  if (field.type === "Location") {
+    initialShowModal[field.name] = false;
+    initialValues[field.name] = { lat: Number, long: Number };
+    initalAdresses[field.name] = "آدرس را از نقشه انتخاب کنید.";
+  } else {
+    initialValues[field.name] = "";
+  }
 });
 
+const getAddress = (lat, long) => {
+  const promise = new Promise((resolve, reject) => {
+    fetch(`https://map.ir/reverse?lat=${lat}&lon=${long}`, {
+      method: "GET",
+      headers: {
+        "x-api-key": process.env.REACT_APP_MAP_IR_TOKEN
+      }
+    })
+      .then(res => res.json())
+      .then(response => {
+        resolve(response.address_compact);
+      })
+      .catch(err => reject(err));
+  });
+  return promise;
+};
+
 const FormScreen = props => {
+  const [showModal, setShowModal] = useState(initialShowModal);
+  const [addresses, setAddresses] = useState(initalAdresses);
+  const openModal = useCallback(
+    name => {
+      const newShowModal = { ...showModal };
+      newShowModal[name] = true;
+      setShowModal(newShowModal);
+    },
+    [showModal]
+  );
+
+  const closeModal = useCallback(
+    name => {
+      const newShowModal = { ...showModal };
+      newShowModal[name] = false;
+      setShowModal(newShowModal);
+    },
+    [showModal]
+  );
+
+  const changeAddress = useCallback(
+    (name, value) => {
+      const newAdresses = { ...addresses };
+      addresses[name] = value;
+      setAddresses(newAdresses);
+    },
+    [addresses]
+  );
+
   const renderField = useCallback(
     (field, { values, handleChange, handleBlur, setFieldValue }) => {
       switch (field.type) {
@@ -87,25 +143,46 @@ const FormScreen = props => {
               />
             );
         case "Location":
-          return null;
+          if (field.options) {
+            return null;
+          } else {
+            return (
+              <div key={field.name}>
+                <InputGroup compact>
+                  <Button type="primary" onClick={() => openModal(field.name)}>
+                    انتخاب از نقشه
+                  </Button>
+                  <Input
+                    style={{ width: "50%" }}
+                    value={initalAdresses[field.name]}
+                  />
+                </InputGroup>
+                <MapModal
+                  visible={showModal[field.name]}
+                  onClose={() => {
+                    closeModal(field.name);
+                  }}
+                  onSubmit={coords => {
+                    setFieldValue(field.name, coords);
+                    closeModal(field.name);
+                    getAddress(coords.lat, coords.long)
+                      .then(address => changeAddress(field.name, address))
+                      .catch(err => console.log(err));
+                  }}
+                  title={field.title}
+                />
+              </div>
+            );
+          }
         default:
           return null;
       }
     },
-    []
+    [changeAddress, closeModal, openModal, showModal]
   );
-  console.log(process.env);
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.REACT_APP_API_KEY }}
-        defaultCenter={{
-          lat: 59.95,
-          lng: 30.33
-        }}
-        defaultZoom={11}
-      />
-      <Formik initialValues={initialValues} onSubmit={an => console.log(an)}>
+      <Formik initialValues={initialValues}>
         {props => (
           <form onSubmit={props.handleSubmit}>
             {FORM_DATA.fields.map(field => renderField(field, props))}
