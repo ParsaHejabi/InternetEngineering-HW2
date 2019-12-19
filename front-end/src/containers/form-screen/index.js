@@ -1,63 +1,15 @@
-import React, { useCallback, useState, useEffect } from "react";
-import { Input, Select, Button, Row, Col } from "antd";
-import { Formik } from "formik";
-import MapModal from "../../components/map-modal";
+import React, { useCallback, useState, useEffect } from 'react';
+import { Input, Select, Button, Row, Col } from 'antd';
+import { Formik } from 'formik';
+import MapModal from '../../components/map-modal';
 
 const InputGroup = Input.Group;
 
 const { Option } = Select;
 
-const FORM_DATA = {
-  title: "A smaple form",
-  id: "1234",
-  fields: [
-    {
-      name: "First_Name",
-      title: "First Name",
-      type: "Text",
-      required: true
-    },
-    {
-      name: "Loc",
-      title: "Your Location",
-      type: "Location",
-      required: false
-    },
-
-    {
-      name: "Request_Type",
-      title: "Request Type",
-      type: "Text",
-      options: [
-        { label: "Help", value: "Help" },
-        { label: "Info", value: "Information" }
-      ]
-    },
-    {
-      name: "Base_Location",
-      title: "Base Location",
-      type: "Location",
-      options: [
-        { label: "Base1", value: { lat: "1.2", long: "3.2" } },
-        { label: "Base2", value: { lat: "2.3", long: "1.434" } }
-      ]
-    }
-  ]
-};
+const back_end_url = 'http://localhost:9000/api/forms/1/';
 
 const initialValues = {};
-const initialShowModal = {};
-const initalAdresses = {};
-
-FORM_DATA.fields.forEach(field => {
-  if (field.type === "Location") {
-    initialShowModal[field.name] = false;
-    initialValues[field.name] = { lat: Number, long: Number };
-    initalAdresses[field.name] = "آدرس را از نقشه انتخاب کنید.";
-  } else {
-    initialValues[field.name] = "";
-  }
-});
 
 const getAddress = (lat, long) => {
   const promise = new Promise((resolve, reject) => {
@@ -77,8 +29,37 @@ const getAddress = (lat, long) => {
 };
 
 const FormScreen = props => {
-  const [showModal, setShowModal] = useState(initialShowModal);
-  const [addresses, setAddresses] = useState(initalAdresses);
+  const [showModal, setShowModal] = useState({});
+  const [addresses, setAddresses] = useState({});
+  const [formData, setFormData] = useState({ 'fields': [] });
+
+  async function getFormData() {
+    const res = await fetch(back_end_url);
+
+    res
+      .json()
+      .then(res => {
+        let showModal = {};
+        let addresses = {};
+        res.fields.forEach(field => {
+          if (field.type === 'Location') {
+            initialValues[field.name] = { lat: Number, long: Number };
+            showModal[field.name] = false;
+            addresses[field.name] = 'آدرس را از نقشه انتخاب کنید.';
+          } else {
+            initialValues[field.name] = '';
+          }
+        });
+        setShowModal(showModal);
+        setAddresses(addresses);
+        setFormData(res);
+      });
+  }
+
+  useEffect(() => {
+    getFormData();
+  }, []);
+
   const openModal = useCallback(
     name => {
       const newShowModal = { ...showModal };
@@ -154,7 +135,7 @@ const FormScreen = props => {
                   </Button>
                   <Input
                     style={{ width: "50%" }}
-                    value={initalAdresses[field.name]}
+                    value={addresses[field.name]}
                   />
                 </InputGroup>
                 <MapModal
@@ -185,7 +166,7 @@ const FormScreen = props => {
       <Formik initialValues={initialValues}>
         {props => (
           <form onSubmit={props.handleSubmit}>
-            {FORM_DATA.fields.map(field => renderField(field, props))}
+            {formData.fields.map(field => renderField(field, props))}
             <Button type="primary">ثبت</Button>
           </form>
         )}
