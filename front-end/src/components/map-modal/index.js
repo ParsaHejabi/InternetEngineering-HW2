@@ -27,6 +27,7 @@ const MapModal = props => {
     >
       <div style={{ height: 400 }}>
         <GoogleMapReact
+          options={{ fullscreenControl: false }}
           onClick={({ lat, lng }) => setMarker({ lat, lng })}
           bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_API_KEY }}
           defaultCenter={{
