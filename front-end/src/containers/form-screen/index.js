@@ -81,7 +81,7 @@ const FormScreen = props => {
   const changeAddress = useCallback(
     (name, value) => {
       const newAdresses = { ...addresses };
-      addresses[name] = value;
+      newAdresses[name] = value;
       setAddresses(newAdresses);
     },
     [addresses]
