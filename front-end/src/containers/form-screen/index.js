@@ -1,4 +1,6 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, {
+  useCallback, useState, useEffect, useRef,
+} from 'react';
 import { Input, Select, Button } from 'antd';
 import { Formik } from 'formik';
 import { useParams } from 'react-router-dom';
@@ -17,8 +19,8 @@ const getAddress = (lat, long) => {
     fetch(`https://map.ir/reverse?lat=${lat}&lon=${long}`, {
       method: 'GET',
       headers: {
-        'x-api-key': process.env.REACT_APP_MAP_IR_TOKEN
-      }
+        'x-api-key': process.env.REACT_APP_MAP_IR_TOKEN,
+      },
     })
       .then((res) => res.json())
       .then((response) => {
@@ -46,8 +48,8 @@ const FormScreen = () => {
       body: JSON.stringify(values),
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
       .then((res) => res.json())
       .then((response) => {
@@ -60,7 +62,6 @@ const FormScreen = () => {
     const res = await fetch(BACK_END_URL.current);
 
     res.json().then((newRes) => {
-      console.log(newRes);
       const newShowModal = {};
       const newAddresses = {};
       const validationShape = {};
@@ -68,7 +69,7 @@ const FormScreen = () => {
         if (field.type === 'Location') {
           if (field.required) {
             validationShape[field.name] = Yup.object().required(
-              'این فیلد اجباری است'
+              'این فیلد اجباری است',
             );
           }
           initialValues[field.name] = { lat: Number, long: Number };
@@ -82,13 +83,13 @@ const FormScreen = () => {
               .typeError('این فیلد باید رقم باشد');
           } else {
             validationShape[field.name] = Yup.number().typeError(
-              'این فیلد باید رقم باشد'
+              'این فیلد باید رقم باشد',
             );
           }
         } else {
           if (field.required) {
             validationShape[field.name] = Yup.string().required(
-              'این فیلد اجباری است'
+              'این فیلد اجباری است',
             );
           }
           initialValues[field.name] = '';
@@ -111,7 +112,7 @@ const FormScreen = () => {
       newShowModal[name] = true;
       setShowModal(newShowModal);
     },
-    [showModal]
+    [showModal],
   );
 
   const closeModal = useCallback(
@@ -120,7 +121,7 @@ const FormScreen = () => {
       newShowModal[name] = false;
       setShowModal(newShowModal);
     },
-    [showModal]
+    [showModal],
   );
 
   const changeAddress = useCallback(
@@ -129,11 +130,13 @@ const FormScreen = () => {
       newAdresses[name] = value;
       setAddresses(newAdresses);
     },
-    [addresses]
+    [addresses],
   );
 
   const renderField = useCallback(
-    (field, { values, handleChange, handleBlur, setFieldValue, errors }) => {
+    (field, {
+      values, handleChange, handleBlur, setFieldValue, errors,
+    }) => {
       switch (field.type) {
         case 'Number': {
           return (
@@ -246,7 +249,7 @@ const FormScreen = () => {
           return null;
       }
     },
-    [addresses, changeAddress, closeModal, openModal, showModal]
+    [addresses, changeAddress, closeModal, openModal, showModal],
   );
   return (
     <div style={{ height: '100vh', width: '100%' }}>
@@ -255,17 +258,14 @@ const FormScreen = () => {
         onSubmit={submitForm}
         validationSchema={FormSchema.current}
       >
-        {(props) => {
-          console.log(props);
-          return (
-            <form onSubmit={props.handleSubmit}>
-              {formData.fields.map((field) => renderField(field, props))}
-              <Button type="primary" onClick={props.handleSubmit}>
-                ثبت
-              </Button>
-            </form>
-          );
-        }}
+        {(props) => (
+          <form onSubmit={props.handleSubmit}>
+            {formData.fields.map((field) => renderField(field, props))}
+            <Button type="primary" onClick={props.handleSubmit}>
+              ثبت
+            </Button>
+          </form>
+        )}
       </Formik>
     </div>
   );

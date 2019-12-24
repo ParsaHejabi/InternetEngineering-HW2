@@ -5,13 +5,19 @@ import GoogleMapReact from 'google-map-react';
 const MapSelectModal = (props) => {
   const [coords, setCoords] = useState({
     lat: null,
-    lang: null
+    lang: null,
   });
+  const {
+    onClose,
+    visible,
+    title,
+    items,
+  } = props;
   return (
     <Modal
-      onCancel={props.onClose}
-      visible={props.visible}
-      title={props.title}
+      onCancel={onClose}
+      visible={visible}
+      title={title}
       footer={[
         <Button
           key="submit"
@@ -28,7 +34,6 @@ const MapSelectModal = (props) => {
           onClick={() => {
             if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition((position) => {
-                console.log(position);
                 props.onSubmit({
                   lat: position.coords.latitude,
                   lang: position.coords.longitude,
@@ -38,12 +43,13 @@ const MapSelectModal = (props) => {
           }}
         >
           مختصات من
-        </Button>
+        </Button>,
       ]}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {props.items.map((item) => (
+        {items.map((item) => (
           <button
+            type="button"
             style={{ width: 200, height: 200 }}
             onClick={() => setCoords(item.value)}
           >
@@ -52,19 +58,19 @@ const MapSelectModal = (props) => {
               options={{ fullscreenControl: false, zoomControl: false }}
               bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_API_KEY }}
               defaultCenter={{
-                lat: parseInt(item.value.lat),
-                lng: parseInt(item.value.long)
+                lat: parseInt(item.value.lat, 10),
+                lng: parseInt(item.value.long, 10),
               }}
               defaultZoom={11}
             >
               <div
-                lat={parseInt(item.value.lat)}
-                lng={parseInt(item.value.long)}
+                lat={parseInt(item.value.lat, 10)}
+                lng={parseInt(item.value.long, 10)}
                 style={{
                   height: 20,
                   width: 20,
                   borderRadius: 10,
-                  backgroundColor: 'red'
+                  backgroundColor: 'red',
                 }}
               />
             </GoogleMapReact>
