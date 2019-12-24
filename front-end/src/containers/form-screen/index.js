@@ -5,6 +5,8 @@ import { Input, Select, Button } from 'antd';
 import { Formik } from 'formik';
 import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+import 'react-modern-calendar-datepicker/lib/DatePicker.css';
+import DatePicker from 'react-modern-calendar-datepicker';
 import MapModal from '../../components/map-modal';
 import MapSelectModal from '../../components/map-select-modal';
 
@@ -42,6 +44,7 @@ const FormScreen = () => {
   const [showModal, setShowModal] = useState({});
   const [addresses, setAddresses] = useState({});
   const [formData, setFormData] = useState({ fields: [] });
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const submitForm = useCallback((values) => {
     fetch(BACK_END_URL.current, {
@@ -52,9 +55,6 @@ const FormScreen = () => {
       },
     })
       .then((res) => res.json())
-      .then((response) => {
-        console.log(response);
-      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -64,6 +64,7 @@ const FormScreen = () => {
     res.json().then((newRes) => {
       const newShowModal = {};
       const newAddresses = {};
+      const newSelectedDay = null;
       const validationShape = {};
       newRes.fields.forEach((field) => {
         if (field.type === 'Location') {
@@ -86,6 +87,13 @@ const FormScreen = () => {
               'این فیلد باید رقم باشد',
             );
           }
+        } else if (field.type === 'Date') {
+          initialValues[field.name] = '';
+          if (field.required) {
+            validationShape[field.name] = Yup.object().required(
+              'این فیلد اجباری است',
+            );
+          }
         } else {
           if (field.required) {
             validationShape[field.name] = Yup.string().required(
@@ -98,6 +106,7 @@ const FormScreen = () => {
       FormSchema.current = Yup.object().shape(validationShape);
       setShowModal(newShowModal);
       setAddresses(newAddresses);
+      setSelectedDay(newSelectedDay);
       setFormData(newRes);
     });
   }, []);
@@ -153,6 +162,16 @@ const FormScreen = () => {
               />
               <span>{errors[field.name]}</span>
             </>
+          );
+        }
+        case 'Date': {
+          return (
+            <DatePicker
+              value={selectedDay}
+              onChange={setSelectedDay}
+              inputPlaceholder="Select a day"
+              shouldHighlightWeekends
+            />
           );
         }
         case 'Text':
@@ -232,7 +251,6 @@ const FormScreen = () => {
                   closeModal(field.name);
                 }}
                 onSubmit={(coords) => {
-                  console.log(coords);
                   setFieldValue(field.name, coords);
                   closeModal(field.name);
                   getAddress(coords.lat, coords.long)
@@ -249,7 +267,7 @@ const FormScreen = () => {
           return null;
       }
     },
-    [addresses, changeAddress, closeModal, openModal, showModal],
+    [addresses, changeAddress, closeModal, openModal, showModal, selectedDay],
   );
   return (
     <div style={{ height: '100vh', width: '100%' }}>

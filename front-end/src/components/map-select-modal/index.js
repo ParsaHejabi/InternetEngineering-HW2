@@ -47,8 +47,10 @@ const MapSelectModal = (props) => {
       ]}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {items.map((item) => (
+        {items.map((item, index) => (
           <button
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
             type="button"
             style={{ width: 200, height: 200 }}
             onClick={() => setCoords(item.value)}
