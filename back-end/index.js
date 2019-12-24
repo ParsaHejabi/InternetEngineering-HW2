@@ -71,4 +71,10 @@ app.get('/api/forms/:formId(\\d+)', (req, res) => {
   }
 });
 
+app.post('/api/forms/:formId(\\d+)', express.json(), (req, res) => {
+  logger.logger.info('Successfully got the data!');
+  const newRes = { status: 'OK', ...req.body };
+  res.json(newRes);
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
