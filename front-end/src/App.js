@@ -1,8 +1,8 @@
-import React from "react";
-import FormScreen from "./containers/form-screen";
+import React from 'react';
+import HomeScreen from './containers/home-screen';
 
 function App() {
-  return <FormScreen />;
+  return <HomeScreen />;
 }
 
 export default App;
