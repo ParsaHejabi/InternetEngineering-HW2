@@ -39,10 +39,27 @@ const FormScreen = () => {
   const [addresses, setAddresses] = useState({});
   const [formData, setFormData] = useState({ fields: [] });
 
+  const submitForm = useCallback((values) => {
+    console.log(JSON.stringify({ an: 'goh' }));
+    fetch(BACK_END_URL.current, {
+      body: JSON.stringify(values),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   const getFormData = useCallback(async () => {
     const res = await fetch(BACK_END_URL.current);
 
     res.json().then((newRes) => {
+      console.log(newRes);
       const newShowModal = {};
       const newAddresses = {};
       newRes.fields.forEach((field) => {
@@ -185,11 +202,13 @@ const FormScreen = () => {
   );
   return (
     <div style={{ height: '100vh', width: '100%' }}>
-      <Formik initialValues={initialValues}>
+      <Formik initialValues={initialValues} onSubmit={submitForm}>
         {(props) => (
           <form onSubmit={props.handleSubmit}>
             {formData.fields.map((field) => renderField(field, props))}
-            <Button type="primary">ثبت</Button>
+            <Button type="primary" onClick={props.handleSubmit}>
+              ثبت
+            </Button>
           </form>
         )}
       </Formik>
