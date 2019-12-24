@@ -1,5 +1,7 @@
 import React from 'react';
-import { Card, Icon, Avatar } from 'antd';
+import {
+  Card, Icon, Row, Col,
+} from 'antd';
 import {
   useRouteMatch, Link, Route, Switch,
 } from 'react-router-dom';
@@ -11,29 +13,24 @@ const Forms = (props) => {
   const { path, url } = useRouteMatch();
 
   const renderFormPlaceHolder = (form, index) => (
-    <Link key={index} to={form.url}>
-      <Card
-        style={{ width: 300, margin: 10 }}
-        cover={(
-          <img
-            alt="example"
-            src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-          />
-                      )}
-        actions={[
-          <Icon type="setting" key="setting" />,
-          <Icon type="edit" key="edit" />,
-          <Icon type="ellipsis" key="ellipsis" />,
-        ]}
-      >
-        <Meta
-          avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-          title={form.title}
-          description="This is the description"
-        />
-      </Card>
-    </Link>
+    <Col key={index} span={6}>
+      <Link to={form.url}>
+        <div>
+          <Card
+            actions={[
+              <Icon type="form" key="form" />,
+            ]}
+          >
+            <Meta
+              title={form.title}
+            />
+          </Card>
+        </div>
+      </Link>
+    </Col>
   );
+
+  const { forms } = props;
 
   return (
     <div>
@@ -41,10 +38,12 @@ const Forms = (props) => {
       <Switch>
         <Route exact path={path}>
           <h3>Please select a form to render:</h3>
-          {props.forms.map((form, index) => renderFormPlaceHolder(form, index))}
+          <Row gutter={16}>
+            {forms.map((form, index) => renderFormPlaceHolder(form, index))}
+          </Row>
         </Route>
         <Route path={`${url}/:id`}>
-          <FormScreen forms={props.forms} />
+          <FormScreen forms={forms} />
         </Route>
       </Switch>
     </div>
