@@ -18,10 +18,26 @@ const MapSelectModal = (props) => {
           type="primary"
           onClick={() => {
             props.onSubmit(coords);
-            console.log('hi');
           }}
         >
           تایید
+        </Button>,
+        <Button
+          key="loc"
+          type="primary"
+          onClick={() => {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition((position) => {
+                console.log(position);
+                props.onSubmit({
+                  lat: position.coords.latitude,
+                  lang: position.coords.longitude,
+                });
+              });
+            }
+          }}
+        >
+          مختصات من
         </Button>
       ]}
     >
