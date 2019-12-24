@@ -1,18 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
-  useRouteMatch,
-  useParams,
 } from 'react-router-dom';
-import FormScreen from '../form-screen';
 import Forms from '../../components/forms';
 
 const BACK_END_URL = 'http://localhost:9000/api/forms/';
 
-const HomeScreen = (props) => {
+const HomeScreen = () => {
   const [forms, setForms] = useState([]);
 
   async function getForms() {
@@ -20,16 +17,16 @@ const HomeScreen = (props) => {
 
     res
       .json()
-      .then((res) => {
-        const forms = [];
-        res.forEach((result) => {
-          forms[result.id] = {
+      .then((newRes) => {
+        const newForms = [];
+        newRes.forEach((result) => {
+          newForms[result.id] = {
             title: result.title,
             url: result.back_end_url.substring(4),
             back_end_url: result.back_end_url,
           };
         });
-        setForms(forms);
+        setForms(newForms);
       });
   }
 
@@ -53,7 +50,9 @@ const HomeScreen = (props) => {
           <Route exact path="/">
             <h1>Welcome to DynaForm!</h1>
           </Route>
-          <Route path="/forms/" children={<Forms forms={forms} />} />
+          <Route path="/forms/">
+            <Forms forms={forms} />
+          </Route>
         </Switch>
       </div>
     </Router>

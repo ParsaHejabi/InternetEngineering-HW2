@@ -24,6 +24,8 @@ module.exports = {
     'react-hooks'
   ],
   rules: {
+    "react/prop-types": [0],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn'
   },
