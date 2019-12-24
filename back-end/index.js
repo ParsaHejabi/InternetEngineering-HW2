@@ -9,6 +9,7 @@ const port = process.env.PORT || 9000;
 
 const FORM_DESCRIPTORS_PATH = path.join(__dirname, 'form-descriptors');
 
+/* eslint no-console: ["error", { allow: ["log"] }] */
 console.log('Starting back-end application...');
 app.use(cors());
 app.use('/', (req, res, next) => {
