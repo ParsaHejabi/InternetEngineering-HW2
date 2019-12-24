@@ -1,61 +1,63 @@
 {
-  "title": "A sample form",
-  "id": "1",
-  "fields": [
-    {
-      "name": "number",
-      "title": "df",
-      "type": "Number",
-      "required": true
-    },
-    {
-      "name": "First_Name",
-      "title": "First Name",
-      "type": "Text",
-      "required": true
-    },
-    {
-      "name": "Loc",
-      "title": "Your Location",
-      "type": "Location",
-      "required": false
-    },
+    "title": "A sample form",
+    "id": "1",
+    "fields": [{
+            "name": "Age",
+            "title": "Age",
+            "type": "Date",
+            "required": true
+        },
+        {
+            "name": "Count",
+            "title": "Count",
+            "type": "Number"
+        },
+        {
+            "name": "First_Name",
+            "title": "First Name",
+            "type": "Text",
+            "required": true
+        },
+        {
+            "name": "Loc",
+            "title": "Your Location",
+            "type": "Location",
+            "required": false
+        },
 
-    {
-      "name": "Request_Type",
-      "title": "Request Type",
-      "type": "Text",
-      "options": [
         {
-          "label": "Help",
-          "value": "Help"
+            "name": "Request_Type",
+            "title": "Request Type",
+            "type": "Text",
+            "options": [{
+                    "label": "Help",
+                    "value": "Help"
+                },
+                {
+                    "label": "Info",
+                    "value": "Information"
+                }
+            ]
         },
         {
-          "label": "Info",
-          "value": "Information"
+            "name": "Base_Location",
+            "title": "Base Location",
+            "type": "Location",
+            "options": [{
+                    "label": "Base1",
+                    "value": {
+                        "lat": "1.2",
+                        "long": "3.2"
+                    }
+                },
+                {
+                    "label": "Base2",
+                    "value": {
+                        "lat": "2.3",
+                        "long": "1.434"
+                    }
+                }
+            ]
         }
-      ]
-    },
-    {
-      "name": "Base_Location",
-      "title": "Base Location",
-      "type": "Location",
-      "options": [
-        {
-          "label": "Base1",
-          "value": {
-            "lat": "1.2",
-            "long": "3.2"
-          }
-        },
-        {
-          "label": "Base2",
-          "value": {
-            "lat": "2.3",
-            "long": "1.434"
-          }
-        }
-      ]
-    }
-  ]
+    ]
 }

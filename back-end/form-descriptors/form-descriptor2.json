@@ -13,7 +13,21 @@
             "type": "Location",
             "required": false
         },
-
+        {
+            "name": "Age",
+            "title": "Age",
+            "type": "Date",
+            "options": [{
+                    "label": "TimeSlot1",
+                    "value": "22/3/78"
+                },
+                {
+                    "label": "TimeSlot2",
+                    "value": "22/11/57"
+                }
+            ],
+            "required": true
+        },
         {
             "name": "Request_Type",
             "title": "Request Type",
