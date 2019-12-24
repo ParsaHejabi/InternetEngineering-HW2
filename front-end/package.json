@@ -27,6 +27,10 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "prettier": {
+    "arrowParens": "always",
+    "singleQuote": true
+  },
   "browserslist": {
     "production": [
       ">0.2%",

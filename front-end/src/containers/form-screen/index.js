@@ -1,12 +1,9 @@
-import React, {
-  useCallback, useState, useEffect, useRef,
-} from 'react';
-import {
-  Input, Select, Button,
-} from 'antd';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
+import { Input, Select, Button } from 'antd';
 import { Formik } from 'formik';
 import { useParams } from 'react-router-dom';
 import MapModal from '../../components/map-modal';
+import MapSelectModal from '../../components/map-select-modal';
 
 const InputGroup = Input.Group;
 
@@ -19,14 +16,17 @@ const getAddress = (lat, long) => {
     fetch(`https://map.ir/reverse?lat=${lat}&lon=${long}`, {
       method: 'GET',
       headers: {
-        'x-api-key': process.env.REACT_APP_MAP_IR_TOKEN,
-      },
+        'x-api-key': process.env.REACT_APP_MAP_IR_TOKEN
+      }
     })
       .then((res) => res.json())
       .then((response) => {
         resolve(response.address_compact);
       })
-      .catch((err) => reject(err));
+      .catch((err) => {
+        reject(err);
+        console.log(err);
+      });
   });
   return promise;
 };
@@ -39,31 +39,26 @@ const FormScreen = () => {
   const [addresses, setAddresses] = useState({});
   const [formData, setFormData] = useState({ fields: [] });
 
-  const getFormData = useCallback(
-    async () => {
-      const res = await fetch(BACK_END_URL.current);
+  const getFormData = useCallback(async () => {
+    const res = await fetch(BACK_END_URL.current);
 
-      res
-        .json()
-        .then((newRes) => {
-          const newShowModal = {};
-          const newAddresses = {};
-          newRes.fields.forEach((field) => {
-            if (field.type === 'Location') {
-              initialValues[field.name] = { lat: Number, long: Number };
-              newShowModal[field.name] = false;
-              newAddresses[field.name] = 'آدرس را از نقشه انتخاب کنید.';
-            } else {
-              initialValues[field.name] = '';
-            }
-          });
-          setShowModal(newShowModal);
-          setAddresses(newAddresses);
-          setFormData(newRes);
-        });
-    },
-    [],
-  );
+    res.json().then((newRes) => {
+      const newShowModal = {};
+      const newAddresses = {};
+      newRes.fields.forEach((field) => {
+        if (field.type === 'Location') {
+          initialValues[field.name] = { lat: Number, long: Number };
+          newShowModal[field.name] = false;
+          newAddresses[field.name] = 'آدرس را از نقشه انتخاب کنید.';
+        } else {
+          initialValues[field.name] = '';
+        }
+      });
+      setShowModal(newShowModal);
+      setAddresses(newAddresses);
+      setFormData(newRes);
+    });
+  }, []);
 
   useEffect(() => {
     getFormData();
@@ -75,7 +70,7 @@ const FormScreen = () => {
       newShowModal[name] = true;
       setShowModal(newShowModal);
     },
-    [showModal],
+    [showModal]
   );
 
   const closeModal = useCallback(
@@ -84,7 +79,7 @@ const FormScreen = () => {
       newShowModal[name] = false;
       setShowModal(newShowModal);
     },
-    [showModal],
+    [showModal]
   );
 
   const changeAddress = useCallback(
@@ -93,13 +88,11 @@ const FormScreen = () => {
       newAdresses[name] = value;
       setAddresses(newAdresses);
     },
-    [addresses],
+    [addresses]
   );
 
   const renderField = useCallback(
-    (field, {
-      values, handleChange, handleBlur, setFieldValue,
-    }) => {
+    (field, { values, handleChange, handleBlur, setFieldValue }) => {
       switch (field.type) {
         case 'Text':
           if (field.options) {
@@ -122,7 +115,8 @@ const FormScreen = () => {
                 ))}
               </Select>
             );
-          } return (
+          }
+          return (
             <Input
               key={field.name}
               name={field.name}
@@ -135,7 +129,26 @@ const FormScreen = () => {
           );
         case 'Location':
           if (field.options) {
-            return null;
+            return (
+              <>
+                <MapSelectModal
+                  items={field.options}
+                  onClose={() => {
+                    closeModal(field.name);
+                  }}
+                  visible={showModal[field.name]}
+                  onSubmit={(coords) => {
+                    setFieldValue(field.name, coords);
+                    closeModal(field.name);
+                  }}
+                />
+                <InputGroup compact>
+                  <Button type="primary" onClick={() => openModal(field.name)}>
+                    انتخاب
+                  </Button>
+                </InputGroup>
+              </>
+            );
           }
           return (
             <div key={field.name}>
@@ -143,10 +156,7 @@ const FormScreen = () => {
                 <Button type="primary" onClick={() => openModal(field.name)}>
                   انتخاب از نقشه
                 </Button>
-                <Input
-                  style={{ width: '50%' }}
-                  value={addresses[field.name]}
-                />
+                <Input style={{ width: '50%' }} value={addresses[field.name]} />
               </InputGroup>
               <MapModal
                 visible={showModal[field.name]}
@@ -154,6 +164,7 @@ const FormScreen = () => {
                   closeModal(field.name);
                 }}
                 onSubmit={(coords) => {
+                  console.log(coords);
                   setFieldValue(field.name, coords);
                   closeModal(field.name);
                   getAddress(coords.lat, coords.long)
@@ -170,7 +181,7 @@ const FormScreen = () => {
           return null;
       }
     },
-    [addresses, changeAddress, closeModal, openModal, showModal],
+    [addresses, changeAddress, closeModal, openModal, showModal]
   );
   return (
     <div style={{ height: '100vh', width: '100%' }}>
