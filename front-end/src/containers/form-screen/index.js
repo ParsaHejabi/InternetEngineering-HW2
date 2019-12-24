@@ -64,7 +64,6 @@ const FormScreen = () => {
     res.json().then((newRes) => {
       const newShowModal = {};
       const newAddresses = {};
-      const newSelectedDay = null;
       const validationShape = {};
       newRes.fields.forEach((field) => {
         if (field.type === 'Location') {
@@ -106,7 +105,6 @@ const FormScreen = () => {
       FormSchema.current = Yup.object().shape(validationShape);
       setShowModal(newShowModal);
       setAddresses(newAddresses);
-      setSelectedDay(newSelectedDay);
       setFormData(newRes);
     });
   }, []);
