@@ -66,15 +66,31 @@ const FormScreen = () => {
       const validationShape = {};
       newRes.fields.forEach((field) => {
         if (field.type === 'Location') {
+          if (field.required) {
+            validationShape[field.name] = Yup.object().required(
+              'این فیلد اجباری است'
+            );
+          }
           initialValues[field.name] = { lat: Number, long: Number };
           newShowModal[field.name] = false;
           newAddresses[field.name] = 'آدرس را از نقشه انتخاب کنید.';
         } else if (field.type === 'Number') {
           initialValues[field.name] = '';
-          validationShape[field.name] = Yup.number().typeError(
-            'این فیلد باید رقم باشد'
-          );
+          if (field.required) {
+            validationShape[field.name] = Yup.number()
+              .required('این فیلد اجباری است')
+              .typeError('این فیلد باید رقم باشد');
+          } else {
+            validationShape[field.name] = Yup.number().typeError(
+              'این فیلد باید رقم باشد'
+            );
+          }
         } else {
+          if (field.required) {
+            validationShape[field.name] = Yup.string().required(
+              'این فیلد اجباری است'
+            );
+          }
           initialValues[field.name] = '';
         }
       });
@@ -139,35 +155,41 @@ const FormScreen = () => {
         case 'Text':
           if (field.options) {
             return (
-              <Select
-                key={field.name}
-                name={field.name}
-                onBlur={handleBlur}
-                value={values[field.name]}
-                required={field.required}
-                onChange={(value) => {
-                  setFieldValue(field.name, value);
-                }}
-                style={{ width: 120 }}
-              >
-                {field.options.map((item) => (
-                  <Option key={item.value} value={item.value}>
-                    {item.label}
-                  </Option>
-                ))}
-              </Select>
+              <>
+                <Select
+                  key={field.name}
+                  name={field.name}
+                  onBlur={handleBlur}
+                  value={values[field.name]}
+                  required={field.required}
+                  onChange={(value) => {
+                    setFieldValue(field.name, value);
+                  }}
+                  style={{ width: 120 }}
+                >
+                  {field.options.map((item) => (
+                    <Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Option>
+                  ))}
+                </Select>
+                <span>{errors[field.name]}</span>
+              </>
             );
           }
           return (
-            <Input
-              key={field.name}
-              name={field.name}
-              placeholder={field.title}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values[field.name]}
-              required={field.required}
-            />
+            <>
+              <Input
+                key={field.name}
+                name={field.name}
+                placeholder={field.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values[field.name]}
+                required={field.required}
+              />
+              <span>{errors[field.name]}</span>
+            </>
           );
         case 'Location':
           if (field.options) {
@@ -189,6 +211,7 @@ const FormScreen = () => {
                     انتخاب
                   </Button>
                 </InputGroup>
+                <span>{errors[field.name]}</span>
               </>
             );
           }
