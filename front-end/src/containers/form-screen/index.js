@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { Input, Select, Button } from 'antd';
 import { Formik } from 'formik';
 import { useParams } from 'react-router-dom';
+import * as Yup from 'yup';
 import MapModal from '../../components/map-modal';
 import MapSelectModal from '../../components/map-select-modal';
 
@@ -32,6 +33,7 @@ const getAddress = (lat, long) => {
 };
 
 const FormScreen = () => {
+  const FormSchema = useRef(null);
   const { id } = useParams();
   const BACK_END_URL = useRef(`http://localhost:9000/api/forms/${id}`);
 
@@ -40,7 +42,6 @@ const FormScreen = () => {
   const [formData, setFormData] = useState({ fields: [] });
 
   const submitForm = useCallback((values) => {
-    console.log(JSON.stringify({ an: 'goh' }));
     fetch(BACK_END_URL.current, {
       body: JSON.stringify(values),
       method: 'POST',
@@ -62,15 +63,22 @@ const FormScreen = () => {
       console.log(newRes);
       const newShowModal = {};
       const newAddresses = {};
+      const validationShape = {};
       newRes.fields.forEach((field) => {
         if (field.type === 'Location') {
           initialValues[field.name] = { lat: Number, long: Number };
           newShowModal[field.name] = false;
           newAddresses[field.name] = 'آدرس را از نقشه انتخاب کنید.';
+        } else if (field.type === 'Number') {
+          initialValues[field.name] = '';
+          validationShape[field.name] = Yup.number().typeError(
+            'این فیلد باید رقم باشد'
+          );
         } else {
           initialValues[field.name] = '';
         }
       });
+      FormSchema.current = Yup.object().shape(validationShape);
       setShowModal(newShowModal);
       setAddresses(newAddresses);
       setFormData(newRes);
@@ -109,8 +117,25 @@ const FormScreen = () => {
   );
 
   const renderField = useCallback(
-    (field, { values, handleChange, handleBlur, setFieldValue }) => {
+    (field, { values, handleChange, handleBlur, setFieldValue, errors }) => {
       switch (field.type) {
+        case 'Number': {
+          return (
+            <>
+              <Input
+                name={field.name}
+                key={field.name}
+                placeholder={field.title}
+                value={values[field.name]}
+                required={field.required}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                style={{ width: 120 }}
+              />
+              <span>{errors[field.name]}</span>
+            </>
+          );
+        }
         case 'Text':
           if (field.options) {
             return (
@@ -202,15 +227,22 @@ const FormScreen = () => {
   );
   return (
     <div style={{ height: '100vh', width: '100%' }}>
-      <Formik initialValues={initialValues} onSubmit={submitForm}>
-        {(props) => (
-          <form onSubmit={props.handleSubmit}>
-            {formData.fields.map((field) => renderField(field, props))}
-            <Button type="primary" onClick={props.handleSubmit}>
-              ثبت
-            </Button>
-          </form>
-        )}
+      <Formik
+        initialValues={initialValues}
+        onSubmit={submitForm}
+        validationSchema={FormSchema.current}
+      >
+        {(props) => {
+          console.log(props);
+          return (
+            <form onSubmit={props.handleSubmit}>
+              {formData.fields.map((field) => renderField(field, props))}
+              <Button type="primary" onClick={props.handleSubmit}>
+                ثبت
+              </Button>
+            </form>
+          );
+        }}
       </Formik>
     </div>
   );
