@@ -104,7 +104,7 @@ const FormScreen = () => {
           if (field.required) {
             validationShape[field.name] = Yup.object().required(
               'این فیلد اجباری است',
-            );
+            ).nullable();
           }
         } else {
           if (field.required) {
