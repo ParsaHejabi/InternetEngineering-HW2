@@ -52,7 +52,9 @@ const MapSelectModal = (props) => {
             // eslint-disable-next-line react/no-array-index-key
             key={index}
             type="button"
-            style={{ width: 200, height: 200 }}
+            style={{
+              width: 200, height: 200, border: 0, margin: '20px',
+            }}
             onClick={() => setCoords(item.value)}
           >
             <h4>{item.label}</h4>

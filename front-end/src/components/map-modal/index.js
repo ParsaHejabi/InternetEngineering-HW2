@@ -4,11 +4,13 @@ import { Modal, Button } from 'antd';
 
 const MapModal = (props) => {
   const [marker, setMarker] = useState({});
+
+  const { onClose, visible, title } = props;
   return (
     <Modal
-      onCancel={props.onClose}
-      visible={props.visible}
-      title={props.title}
+      onCancel={onClose}
+      visible={visible}
+      title={title}
       footer={[
         <Button
           key="submit"

@@ -1,14 +1,18 @@
 import React, {
   useCallback, useState, useEffect, useRef,
 } from 'react';
-import { Input, Select, Button } from 'antd';
+import {
+  Input, Select, Button, Col, Row, Typography, DatePicker,
+} from 'antd';
 import { Formik } from 'formik';
 import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
-import 'react-modern-calendar-datepicker/lib/DatePicker.css';
-import DatePicker from 'react-modern-calendar-datepicker';
+// import 'react-modern-calendar-datepicker/lib/DatePicker.css';
+// import DatePicker from 'react-modern-calendar-datepicker';
 import MapModal from '../../components/map-modal';
 import MapSelectModal from '../../components/map-select-modal';
+
+const { Text } = Typography;
 
 const InputGroup = Input.Group;
 
@@ -83,7 +87,7 @@ const FormScreen = () => {
           }
           initialValues[field.name] = { lat: Number, long: Number };
           newShowModal[field.name] = false;
-          newAddresses[field.name] = 'آدرس را از نقشه انتخاب کنید.';
+          newAddresses[field.name] = 'آدرس را از نقشه انتخاب کنید';
         } else if (field.type === 'Number') {
           initialValues[field.name] = '';
           if (field.required) {
@@ -156,79 +160,93 @@ const FormScreen = () => {
       switch (field.type) {
         case 'Number': {
           return (
-            <>
-              <Input
-                name={field.name}
-                key={field.name}
-                placeholder={field.title}
-                value={values[field.name]}
-                required={field.required}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                style={{ width: 120 }}
-              />
-              <span>{errors[field.name]}</span>
-            </>
+            <Row type="flex" justify="start" gutter={[16, 16]}>
+              <Col span={8}>
+                <Input
+                  name={field.name}
+                  key={field.name}
+                  placeholder={field.title}
+                  value={values[field.name]}
+                  required={field.required}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+              </Col>
+              <Col span={8}>
+                <Text type="danger">{errors[field.name]}</Text>
+              </Col>
+            </Row>
           );
         }
         case 'Date': {
           return (
-            <>
-              <DatePicker
-                value={values[field.name]}
-                onChange={(value) => {
-                  setFieldValue(field.name, value);
-                }}
-                inputPlaceholder="Select a day"
-                shouldHighlightWeekends
-              />
-              <span>{errors[field.name]}</span>
-            </>
+            <Row type="flex" justify="start" gutter={[16, 16]}>
+              <Col span={8}>
+                <DatePicker
+                  value={values[field.name]}
+                  onChange={(value) => {
+                    setFieldValue(field.name, value);
+                  }}
+                  required={field.required}
+                  placeholder={field.title}
+                />
+              </Col>
+              <Col span={8}>
+                <Text type="danger">{errors[field.name]}</Text>
+              </Col>
+            </Row>
           );
         }
         case 'Text':
           if (field.options) {
             return (
-              <>
-                <Select
-                  key={field.name}
-                  name={field.name}
-                  onBlur={handleBlur}
-                  value={values[field.name]}
-                  required={field.required}
-                  onChange={(value) => {
-                    setFieldValue(field.name, value);
-                  }}
-                  style={{ width: 120 }}
-                >
-                  {field.options.map((item) => (
-                    <Option key={item.value} value={item.value}>
-                      {item.label}
-                    </Option>
-                  ))}
-                </Select>
-                <span>{errors[field.name]}</span>
-              </>
+              <Row type="flex" justify="start" gutter={[16, 16]}>
+                <Col span={8}>
+                  <Select
+                    key={field.name}
+                    name={field.name}
+                    onBlur={handleBlur}
+                    value={values[field.name]}
+                    required={field.required}
+                    onChange={(value) => {
+                      setFieldValue(field.name, value);
+                    }}
+                  >
+                    {field.options.map((item) => (
+                      <Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+                <Col span={8}>
+                  <Text type="danger">{errors[field.name]}</Text>
+                </Col>
+              </Row>
             );
           }
           return (
-            <>
-              <Input
-                key={field.name}
-                name={field.name}
-                placeholder={field.title}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values[field.name]}
-                required={field.required}
-              />
-              <span>{errors[field.name]}</span>
-            </>
+            <Row type="flex" justify="start" gutter={[16, 16]}>
+              <Col span={8}>
+                <Input
+                  key={field.name}
+                  name={field.name}
+                  placeholder={field.title}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values[field.name]}
+                  required={field.required}
+                />
+              </Col>
+              <Col span={8}>
+                <Text type="danger">{errors[field.name]}</Text>
+              </Col>
+            </Row>
           );
         case 'Location':
           if (field.options) {
             return (
-              <>
+              <Row type="flex" justify="start" gutter={[16, 16]}>
                 <MapSelectModal
                   items={field.options}
                   onClose={() => {
@@ -240,23 +258,31 @@ const FormScreen = () => {
                     closeModal(field.name);
                   }}
                 />
-                <InputGroup compact>
-                  <Button type="primary" onClick={() => openModal(field.name)}>
-                    انتخاب
+                <Col span={8}>
+                  <Button onClick={() => openModal(field.name)}>
+                    انتخاب مکان از بین گزینه‌های موجود
                   </Button>
-                </InputGroup>
-                <span>{errors[field.name]}</span>
-              </>
+                </Col>
+                <Col span={8}>
+                  <Text type="danger">{errors[field.name]}</Text>
+                </Col>
+              </Row>
             );
           }
           return (
             <div key={field.name}>
-              <InputGroup compact>
-                <Button type="primary" onClick={() => openModal(field.name)}>
-                  انتخاب از نقشه
-                </Button>
-                <Input style={{ width: '50%' }} value={addresses[field.name]} />
-              </InputGroup>
+              <Row type="flex" justify="start" gutter={[16, 16]}>
+                <InputGroup compact>
+                  <Col span={8}>
+                    <Button block type="primary" onClick={() => openModal(field.name)}>
+                      انتخاب از نقشه
+                    </Button>
+                  </Col>
+                  <Col span={8}>
+                    <Input value={addresses[field.name]} />
+                  </Col>
+                </InputGroup>
+              </Row>
               <MapModal
                 visible={showModal[field.name]}
                 onClose={() => {
@@ -283,7 +309,8 @@ const FormScreen = () => {
   );
   if (submitStatus === 'pending') {
     return (
-      <div style={{ height: '100vh', width: '100%' }}>
+      <div style={{ height: '100%', width: '100%' }}>
+        <h1>{formData.title}</h1>
         <Formik
           initialValues={initialValues}
           onSubmit={submitForm}
@@ -292,9 +319,13 @@ const FormScreen = () => {
           {(props) => (
             <form onSubmit={props.handleSubmit}>
               {formData.fields.map((field) => renderField(field, props))}
-              <Button type="primary" onClick={props.handleSubmit}>
-                ثبت
-              </Button>
+              <Row type="flex" justify="start" gutter={[16, 16]}>
+                <Col>
+                  <Button type="primary" block onClick={props.handleSubmit}>
+                    ثبت
+                  </Button>
+                </Col>
+              </Row>
             </form>
           )}
         </Formik>

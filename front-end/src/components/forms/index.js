@@ -34,16 +34,16 @@ const Forms = (props) => {
 
   return (
     <div>
-      <h2>Forms</h2>
       <Switch>
         <Route exact path={path}>
+          <h2>Forms</h2>
           <h3>Please select a form to render:</h3>
           <Row gutter={16}>
             {forms.map((form, index) => renderFormPlaceHolder(form, index))}
           </Row>
         </Route>
         <Route path={`${url}/:id`}>
-          <FormScreen forms={forms} />
+          <FormScreen />
         </Route>
       </Switch>
     </div>

@@ -50,7 +50,7 @@ const HomeScreen = () => {
           breakpoint="lg"
           collapsedWidth="0"
         >
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+          <Menu theme="dark" mode="inline">
             <Menu.Item key="1">
               <Link to="/">
                 <Icon type="home" />
